@@ -312,17 +312,7 @@ export class MyCustomIntegration implements Plugin {
 | `viewers` | Viewer count update | count, timestamp |
 | `join` | User joined stream | user, timestamp |
 
-### 🗺️ Roadmap
 
-- [ ] Redis integration for event caching
-- [ ] PostgreSQL support for analytics
-- [ ] Grafana dashboards
-- [ ] Twitch integration
-- [ ] YouTube Live support
-- [ ] Plugin marketplace
-- [ ] Web-based configuration UI
-- [ ] Mobile app
-- [ ] AI-powered spam detection
 
 ### 🤝 Contributing
 
@@ -338,17 +328,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### 🙏 Acknowledgments
-
-- [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector) - TikTok Live connection library
-- [Socket.IO](https://socket.io/) - Real-time communication
-- [MQTT.js](https://github.com/mqttjs/MQTT.js) - MQTT client
-- [OBS WebSocket](https://github.com/obsproject/obs-websocket) - OBS integration
-
-### 📞 Support
-
-- 📫 Issues: [GitHub Issues](https://github.com/yourusername/tiktok-live-event-router/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/tiktok-live-event-router/discussions)
 
 ---
 
@@ -385,4 +364,4 @@ Un sistema potente y modular que captura eventos de streams en vivo de TikTok y 
 
 ---
 
-**Made with ❤️ for the TikTok streaming community**
+**Made with ❤️ Nicolas Seguel | TUCADIS**
