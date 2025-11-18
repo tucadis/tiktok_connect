@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Live Event Router - Statistics</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>
+        <span class="status-indicator"></span>
+        TikTok Live Event Router
+      </h1>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/stats" class="active">Statistics</a>
+        <a href="/config">Configuration</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="chart-container">
+      <h2>Event Distribution</h2>
+      <canvas id="eventChart"></canvas>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>⏱️ Uptime</h3>
+        <div class="stat-value" id="stat-uptime">0m</div>
+        <div class="stat-label">Stream duration</div>
+      </div>
+
+      <div class="stat-card">
+        <h3>📈 Peak Viewers</h3>
+        <div class="stat-value" id="stat-peak-viewers">0</div>
+        <div class="stat-label">Maximum concurrent viewers</div>
+      </div>
+
+      <div class="stat-card">
+        <h3>🎁 Top Gifter</h3>
+        <div class="stat-value" id="stat-top-gifter">-</div>
+        <div class="stat-label">Most generous supporter</div>
+      </div>
+
+      <div class="stat-card">
+        <h3>🔄 Shares</h3>
+        <div class="stat-value" id="stat-shares">0</div>
+        <div class="stat-label">Total shares</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    let chart;
+    let socket;
+
+    // Initialize chart
+    function initChart(stats) {
+      const ctx = document.getElementById('eventChart').getContext('2d');
+
+      chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Comments', 'Gifts', 'Likes', 'Follows', 'Shares', 'Joins'],
+          datasets: [{
+            data: [
+              stats.totalComments,
+              stats.totalGifts,
+              stats.totalLikes,
+              stats.totalFollows,
+              stats.totalShares,
+              stats.totalJoins
+            ],
+            backgroundColor: [
+              '#3b82f6',
+              '#f59e0b',
+              '#ef4444',
+              '#10b981',
+              '#8b5cf6',
+              '#06b6d4'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#ffffff'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Update stats
+    function updateStats(stats) {
+      // Update chart
+      if (chart) {
+        chart.data.datasets[0].data = [
+          stats.totalComments,
+          stats.totalGifts,
+          stats.totalLikes,
+          stats.totalFollows,
+          stats.totalShares,
+          stats.totalJoins
+        ];
+        chart.update();
+      }
+
+      // Update text stats
+      const uptime = Math.floor(stats.uptime / 1000 / 60);
+      document.getElementById('stat-uptime').textContent = uptime + 'm';
+      document.getElementById('stat-peak-viewers').textContent = stats.peakViewers.toLocaleString();
+      document.getElementById('stat-top-gifter').textContent = stats.topGifter?.nickname || '-';
+      document.getElementById('stat-shares').textContent = stats.totalShares.toLocaleString();
+
+      // Update connection status
+      const indicator = document.querySelector('.status-indicator');
+      if (stats.currentViewers > 0) {
+        indicator.classList.add('connected');
+      }
+    }
+
+    // Connect to WebSocket
+    function connectWebSocket() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}`;
+
+      socket = io(wsUrl);
+
+      socket.on('stats', (stats) => {
+        updateStats(stats);
+      });
+
+      socket.on('connection_status', (status) => {
+        const indicator = document.querySelector('.status-indicator');
+        if (status.connected) {
+          indicator.classList.add('connected');
+        } else {
+          indicator.classList.remove('connected');
+        }
+      });
+    }
+
+    // Load initial stats
+    async function loadStats() {
+      try {
+        const response = await fetch('/api/stats');
+        const stats = await response.json();
+
+        if (!chart) {
+          initChart(stats);
+        }
+
+        updateStats(stats);
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStats();
+      connectWebSocket();
+      setInterval(loadStats, 5000);
+    });
+  </script>
+</body>
+</html>

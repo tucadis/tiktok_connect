@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Live Event Router</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      margin-bottom: 40px;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: var(--dark-secondary);
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      margin-bottom: 15px;
+      color: var(--primary);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .status-box {
+      background: var(--dark);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .status-box h4 {
+      margin-bottom: 10px;
+      color: var(--text-secondary);
+    }
+
+    .status-value {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .status-value.connected {
+      color: var(--success);
+    }
+
+    .status-value.disconnected {
+      color: var(--error);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>
+        <span class="status-indicator"></span>
+        TikTok Live Event Router
+      </h1>
+      <nav>
+        <a href="/" class="active">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/stats">Statistics</a>
+        <a href="/config">Configuration</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <h1>🎥 TikTok Live Event Router</h1>
+      <p>Real-time event detection and distribution for TikTok Live streams</p>
+      <div class="button-group">
+        <a href="/dashboard" class="btn btn-primary">View Dashboard</a>
+        <a href="/stats" class="btn btn-secondary">Statistics</a>
+      </div>
+    </div>
+
+    <div class="status-box">
+      <h4>Connection Status</h4>
+      <div class="status-value" id="connection-status">Checking...</div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="card">
+        <h3>📊 Real-time Dashboard</h3>
+        <p>Monitor all TikTok Live events in real-time with beautiful visualizations and statistics.</p>
+        <a href="/dashboard" class="btn btn-primary" style="margin-top: 15px;">Open Dashboard</a>
+      </div>
+
+      <div class="card">
+        <h3>🔌 Multiple Integrations</h3>
+        <p>
+          Connect to Discord, MQTT, WebSockets, OBS, and custom webhooks.
+          Distribute events to any platform you need.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>🎮 IoT & Gaming</h3>
+        <p>
+          Control ESP32 devices, integrate with Unity games, automate OBS,
+          and create interactive experiences.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>📈 Analytics</h3>
+        <p>
+          Track engagement metrics, top supporters, viewer trends,
+          and stream performance over time.
+        </p>
+        <a href="/stats" class="btn btn-primary" style="margin-top: 15px;">View Stats</a>
+      </div>
+
+      <div class="card">
+        <h3>⚙️ Easy Configuration</h3>
+        <p>
+          Simple web-based configuration for filters, webhooks,
+          and all integration settings.
+        </p>
+        <a href="/config" class="btn btn-primary" style="margin-top: 15px;">Configure</a>
+      </div>
+
+      <div class="card">
+        <h3>🔧 Plugin System</h3>
+        <p>
+          Easily extend functionality with custom plugins.
+          Create your own integrations in minutes.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 30px;">
+      <h3>🚀 Quick Start</h3>
+      <ol style="line-height: 2;">
+        <li>Configure your TikTok username in <a href="/config">Configuration</a></li>
+        <li>Set up your integrations (Discord, MQTT, etc.)</li>
+        <li>Open the <a href="/dashboard">Dashboard</a> to see live events</li>
+        <li>Enjoy real-time interactions!</li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-top: 20px; text-align: center;">
+      <h3>📚 Documentation</h3>
+      <p>
+        Check out the
+        <a href="https://github.com/yourusername/tiktok-live-event-router" target="_blank" style="color: var(--primary);">
+          GitHub Repository
+        </a>
+        for full documentation, examples, and source code.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    async function checkStatus() {
+      try {
+        const response = await fetch('/api/status');
+        const data = await response.json();
+        const statusEl = document.getElementById('connection-status');
+        const indicator = document.querySelector('.status-indicator');
+
+        if (data.connected) {
+          statusEl.textContent = 'Connected';
+          statusEl.className = 'status-value connected';
+          indicator.classList.add('connected');
+        } else {
+          statusEl.textContent = 'Disconnected';
+          statusEl.className = 'status-value disconnected';
+          indicator.classList.remove('connected');
+        }
+      } catch (error) {
+        console.error('Error checking status:', error);
+      }
+    }
+
+    checkStatus();
+    setInterval(checkStatus, 5000);
+  </script>
+</body>
+</html>

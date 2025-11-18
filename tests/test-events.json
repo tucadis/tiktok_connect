@@ -1,0 +1,115 @@
+[
+  {
+    "type": "comment",
+    "user": {
+      "userId": "123",
+      "uniqueId": "testuser1",
+      "nickname": "Test User 1",
+      "isFollowing": false,
+      "isModerator": false
+    },
+    "message": "Hello everyone!",
+    "timestamp": 1234567890000
+  },
+  {
+    "type": "gift",
+    "user": {
+      "userId": "456",
+      "uniqueId": "testuser2",
+      "nickname": "Test User 2",
+      "isFollowing": true,
+      "isModerator": false
+    },
+    "gift": {
+      "id": 1,
+      "name": "Rose",
+      "count": 5,
+      "diamondCount": 5,
+      "repeatEnd": true
+    },
+    "timestamp": 1234567891000
+  },
+  {
+    "type": "gift",
+    "user": {
+      "userId": "789",
+      "uniqueId": "testuser3",
+      "nickname": "Big Gifter",
+      "isFollowing": true,
+      "isModerator": false
+    },
+    "gift": {
+      "id": 5,
+      "name": "Universe",
+      "count": 1,
+      "diamondCount": 5000,
+      "repeatEnd": true
+    },
+    "timestamp": 1234567892000
+  },
+  {
+    "type": "follow",
+    "user": {
+      "userId": "321",
+      "uniqueId": "newfollower",
+      "nickname": "New Follower",
+      "isFollowing": true,
+      "isModerator": false
+    },
+    "timestamp": 1234567893000
+  },
+  {
+    "type": "like",
+    "user": {
+      "userId": "654",
+      "uniqueId": "liker",
+      "nickname": "Liker",
+      "isFollowing": false,
+      "isModerator": false
+    },
+    "likeCount": 10,
+    "totalLikeCount": 12345,
+    "timestamp": 1234567894000
+  },
+  {
+    "type": "share",
+    "user": {
+      "userId": "987",
+      "uniqueId": "sharer",
+      "nickname": "Sharer",
+      "isFollowing": true,
+      "isModerator": false
+    },
+    "timestamp": 1234567895000
+  },
+  {
+    "type": "viewers",
+    "viewerCount": 250,
+    "timestamp": 1234567896000
+  },
+  {
+    "type": "join",
+    "user": {
+      "userId": "111",
+      "uniqueId": "joiner",
+      "nickname": "New Viewer",
+      "isFollowing": false,
+      "isModerator": false
+    },
+    "timestamp": 1234567897000
+  },
+  {
+    "type": "comment",
+    "user": {
+      "userId": "123",
+      "uniqueId": "testuser1",
+      "nickname": "Test User 1",
+      "isFollowing": false,
+      "isModerator": false
+    },
+    "message": "!help",
+    "timestamp": 1234567898000,
+    "isCommand": true,
+    "command": "help"
+  }
+]

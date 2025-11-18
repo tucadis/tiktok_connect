@@ -1,0 +1,47 @@
+{
+  "tiktok_username": "@usuario",
+  "webhooks": {
+    "discord": "",
+    "custom": []
+  },
+  "mqtt": {
+    "broker": "localhost",
+    "port": 1883,
+    "username": "",
+    "password": "",
+    "topics": {
+      "comments": "tiktok/comments",
+      "gifts": "tiktok/gifts",
+      "likes": "tiktok/likes",
+      "follows": "tiktok/follows",
+      "shares": "tiktok/shares",
+      "viewers": "tiktok/viewers",
+      "joins": "tiktok/joins"
+    }
+  },
+  "obs": {
+    "host": "localhost",
+    "port": 4455,
+    "password": "",
+    "enabled": false
+  },
+  "filters": {
+    "min_gift_value": 10,
+    "banned_words": [],
+    "vip_users": [],
+    "min_comment_length": 1
+  },
+  "plugins": [],
+  "server": {
+    "port": 3000,
+    "enable_websocket": true,
+    "enable_api": true
+  },
+  "features": {
+    "auto_reconnect": true,
+    "rate_limiting": true,
+    "spam_filter": true,
+    "commands_enabled": true,
+    "command_prefix": "!"
+  }
+}

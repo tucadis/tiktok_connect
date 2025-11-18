@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: tiktok-live-router
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - TIKTOK_USERNAME=${TIKTOK_USERNAME}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+      - OBS_HOST=host.docker.internal
+      - OBS_PORT=${OBS_PORT:-4455}
+      - OBS_PASSWORD=${OBS_PASSWORD}
+      - MQTT_BROKER=mosquitto
+      - MQTT_PORT=1883
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - mosquitto
+    networks:
+      - tiktok-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: tiktok-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - tiktok-network
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: tiktok-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+      - mosquitto-data:/mosquitto/data
+    networks:
+      - tiktok-network
+
+networks:
+  tiktok-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  mosquitto-data:

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Live Event Router - Configuration</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>
+        <span class="status-indicator"></span>
+        TikTok Live Event Router
+      </h1>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/stats">Statistics</a>
+        <a href="/config" class="active">Configuration</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="alert-container"></div>
+
+    <div class="chart-container">
+      <h2>Configuration</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 20px;">
+        Note: Some configuration changes may require a server restart to take effect.
+      </p>
+
+      <form id="config-form">
+        <div class="form-group">
+          <label for="tiktok-username">TikTok Username</label>
+          <input type="text" id="tiktok-username" placeholder="@username" required>
+        </div>
+
+        <h3 style="margin: 30px 0 20px 0;">Webhooks</h3>
+
+        <div class="form-group">
+          <label for="discord-webhook">Discord Webhook URL</label>
+          <input type="url" id="discord-webhook" placeholder="https://discord.com/api/webhooks/...">
+        </div>
+
+        <h3 style="margin: 30px 0 20px 0;">MQTT Configuration</h3>
+
+        <div class="form-group">
+          <label for="mqtt-broker">MQTT Broker</label>
+          <input type="text" id="mqtt-broker" placeholder="localhost">
+        </div>
+
+        <div class="form-group">
+          <label for="mqtt-port">MQTT Port</label>
+          <input type="number" id="mqtt-port" placeholder="1883">
+        </div>
+
+        <h3 style="margin: 30px 0 20px 0;">OBS Configuration</h3>
+
+        <div class="form-group">
+          <label for="obs-enabled">
+            <input type="checkbox" id="obs-enabled">
+            Enable OBS Integration
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="obs-host">OBS Host</label>
+          <input type="text" id="obs-host" placeholder="localhost">
+        </div>
+
+        <div class="form-group">
+          <label for="obs-port">OBS Port</label>
+          <input type="number" id="obs-port" placeholder="4455">
+        </div>
+
+        <h3 style="margin: 30px 0 20px 0;">Filters</h3>
+
+        <div class="form-group">
+          <label for="min-gift-value">Minimum Gift Value (diamonds)</label>
+          <input type="number" id="min-gift-value" placeholder="10">
+        </div>
+
+        <div class="form-group">
+          <label for="banned-words">Banned Words (comma-separated)</label>
+          <textarea id="banned-words" rows="3" placeholder="word1, word2, word3"></textarea>
+        </div>
+
+        <div style="margin-top: 30px;">
+          <button type="submit" class="btn btn-primary">Save Configuration</button>
+          <button type="button" class="btn btn-secondary" onclick="loadConfig()">Reset</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    async function loadConfig() {
+      try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+
+        document.getElementById('tiktok-username').value = config.tiktok_username;
+        document.getElementById('discord-webhook').value = config.webhooks.discord === '***' ? '' : config.webhooks.discord || '';
+        document.getElementById('mqtt-broker').value = config.mqtt.broker;
+        document.getElementById('mqtt-port').value = config.mqtt.port;
+        document.getElementById('obs-enabled').checked = config.obs.enabled;
+        document.getElementById('obs-host').value = config.obs.host;
+        document.getElementById('obs-port').value = config.obs.port;
+        document.getElementById('min-gift-value').value = config.filters.min_gift_value || '';
+        document.getElementById('banned-words').value = config.filters.banned_words?.join(', ') || '';
+      } catch (error) {
+        console.error('Error loading config:', error);
+        showAlert('Error loading configuration', 'error');
+      }
+    }
+
+    async function saveConfig(event) {
+      event.preventDefault();
+
+      const config = {
+        tiktok_username: document.getElementById('tiktok-username').value,
+        webhooks: {
+          discord: document.getElementById('discord-webhook').value,
+          custom: []
+        },
+        mqtt: {
+          broker: document.getElementById('mqtt-broker').value,
+          port: parseInt(document.getElementById('mqtt-port').value),
+          topics: {
+            comments: 'tiktok/comments',
+            gifts: 'tiktok/gifts',
+            likes: 'tiktok/likes',
+            follows: 'tiktok/follows',
+            shares: 'tiktok/shares',
+            viewers: 'tiktok/viewers',
+            joins: 'tiktok/joins'
+          }
+        },
+        obs: {
+          enabled: document.getElementById('obs-enabled').checked,
+          host: document.getElementById('obs-host').value,
+          port: parseInt(document.getElementById('obs-port').value),
+          password: ''
+        },
+        filters: {
+          min_gift_value: parseInt(document.getElementById('min-gift-value').value) || 0,
+          banned_words: document.getElementById('banned-words').value.split(',').map(w => w.trim()).filter(w => w),
+          vip_users: []
+        },
+        plugins: [],
+        server: {
+          port: 3000,
+          enable_websocket: true,
+          enable_api: true
+        },
+        features: {
+          auto_reconnect: true,
+          rate_limiting: true,
+          spam_filter: true,
+          commands_enabled: true,
+          command_prefix: '!'
+        }
+      };
+
+      try {
+        const response = await fetch('/api/config', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(config)
+        });
+
+        if (response.ok) {
+          showAlert('Configuration saved successfully! Please restart the server for changes to take effect.', 'success');
+        } else {
+          showAlert('Error saving configuration', 'error');
+        }
+      } catch (error) {
+        console.error('Error saving config:', error);
+        showAlert('Error saving configuration', 'error');
+      }
+    }
+
+    function showAlert(message, type) {
+      const container = document.getElementById('alert-container');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      container.innerHTML = '';
+      container.appendChild(alert);
+
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadConfig();
+      document.getElementById('config-form').addEventListener('submit', saveConfig);
+    });
+  </script>
+</body>
+</html>
